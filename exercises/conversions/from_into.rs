@@ -33,17 +33,15 @@ impl Default for Person {
 // If while parsing the age, something goes wrong, then return the default of Person
 // Otherwise, then return an instantiated Person object with the results
 
-// I AM NOT DONE
+
+use std::convert::TryFrom;
 
 impl From<&str> for Person {
     fn from(s: &str) -> Person {
         let mut mutS = s.clone();
-        let mut splitS = mutS.split(",").collect();
+        let mut splitS= mutS.split(",");
         let mut name;
         let mut age: usize;
-        if &splitS.size() == 0 || &splitS.size() > 2 {
-            return Person::default();
-        }
 
         name = match splitS.next() {
             Some(x) if x.len() == 0 => return Person::default(),
@@ -60,6 +58,10 @@ impl From<&str> for Person {
             },
             None => return Person::default(),
         };
+      
+        if let Some(x) = splitS.next() {
+            return Person::default();
+        }
 
         Person { name, age }
     }
