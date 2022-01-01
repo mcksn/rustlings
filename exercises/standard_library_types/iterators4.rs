@@ -1,6 +1,5 @@
 // iterators4.rs
 
-// I AM NOT DONE
 
 pub fn factorial(num: u64) -> u64 {
     // Complete this function to return the factorial of num
@@ -13,11 +12,9 @@ pub fn factorial(num: u64) -> u64 {
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
 
-    let mut myvec = [1..num];
+    let mut myvec = 1..=num;
     myvec
-        .iter()
-        .enumerate()
-        .reduce(|accum, item| *accum * *item)
+        .reduce(|accum, item| accum * item)
         .unwrap()
 }
 
