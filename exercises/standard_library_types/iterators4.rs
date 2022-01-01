@@ -12,6 +12,13 @@ pub fn factorial(num: u64) -> u64 {
     // For an extra challenge, don't use:
     // - recursion
     // Execute `rustlings hint iterators4` for hints.
+
+    let mut myvec = [1..num];
+    myvec
+        .iter()
+        .enumerate()
+        .reduce(|accum, item| *accum * *item)
+        .unwrap()
 }
 
 #[cfg(test)]
