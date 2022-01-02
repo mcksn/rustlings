@@ -16,8 +16,6 @@
 // 4. Complete the partial implementation of `Display` for
 //    `ParseClimateError`.
 
-// I AM NOT DONE
-
 use std::error::Error;
 use std::fmt::{self, Display, Formatter};
 use std::num::{ParseFloatError, ParseIntError};
@@ -46,12 +44,13 @@ impl From<ParseIntError> for ParseClimateError {
 // `ParseFloatError` values.
 impl From<ParseFloatError> for ParseClimateError {
     fn from(e: ParseFloatError) -> Self {
-        // TODO: Complete this function
+        Self::ParseFloat(e)
     }
 }
 
 // TODO: Implement a missing trait so that `main()` below will compile. It
 // is not necessary to implement any methods inside the missing trait.
+impl Error for ParseClimateError {}
 
 // The `Display` trait allows for other code to obtain the error formatted
 // as a user-visible string.
@@ -62,7 +61,10 @@ impl Display for ParseClimateError {
         // Imports the variants to make the following code more compact.
         use ParseClimateError::*;
         match self {
+            Empty => write!(f, "empty input"),
+            BadLen => write!(f, "incorrect number of fields"),
             NoCity => write!(f, "no city name"),
+            ParseInt(e) => write!(f, "error parsing year: {}", e),
             ParseFloat(e) => write!(f, "error parsing temperature: {}", e),
             _ => write!(f, "unhandled error!"),
         }
@@ -90,12 +92,23 @@ impl FromStr for Climate {
     // cases.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let v: Vec<_> = s.split(',').collect();
+        if s.is_empty() {
+            return Err(ParseClimateError::Empty);
+        }
+        if v.len() != 3 {
+            return Err(ParseClimateError::BadLen);
+        }
         let (city, year, temp) = match &v[..] {
-            [city, year, temp] => (city.to_string(), year, temp),
+            [city, year, temp] => (
+                match city.to_string() {
+                    x if x.is_empty() => return Err(ParseClimateError::NoCity),
+                    x => x,
+                },
+                year.parse::<u32>()?,
+                temp.parse::<f32>()?,
+            ),
             _ => return Err(ParseClimateError::BadLen),
         };
-        let year: u32 = year.parse()?;
-        let temp: f32 = temp.parse()?;
         Ok(Climate { city, year, temp })
     }
 }
